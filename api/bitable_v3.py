@@ -249,8 +249,14 @@ class BaseV3Backend:
                 "datetime cell cannot be interpreted using its Base timezone"
             ) from error
 
+    @staticmethod
+    def _empty_cell(value: Any) -> bool:
+        return value is None or value == "" or value == [] or value == {}
+
     @classmethod
-    def _parse_matrix(cls, data: Dict[str, Any]) -> _MatrixPage:
+    def _parse_matrix(
+        cls, data: Dict[str, Any], *, allow_deleted_overlap: bool = False
+    ) -> _MatrixPage:
         timezone = data.get("timezone")
         if not isinstance(timezone, str) or not timezone.strip():
             raise BaseV3MatrixError(
@@ -332,12 +338,20 @@ class BaseV3Backend:
         if missing is None:
             missing = []
         missing_ids = cls._string_list(missing, "record_not_found")
-        if len(set(missing_ids)) != len(missing_ids) or set(missing_ids) & set(
-            record_ids
-        ):
-            raise BaseV3MatrixError(
-                "record_not_found contains duplicate or present IDs"
-            )
+        if len(set(missing_ids)) != len(missing_ids):
+            raise BaseV3MatrixError("record_not_found contains duplicate IDs")
+        overlap = set(missing_ids) & set(record_ids)
+        if overlap:
+            if not allow_deleted_overlap:
+                raise BaseV3MatrixError("record_not_found contains present IDs")
+            rows_by_id = {record_id: row for record_id, row in zip(record_ids, rows)}
+            for record_id in overlap:
+                row = rows_by_id.get(record_id, [])
+                if any(not cls._empty_cell(cell) for cell in row):
+                    raise BaseV3MatrixError(
+                        "record_not_found overlaps a non-empty record",
+                        response_data=data,
+                    )
         return _MatrixPage(
             tuple(records),
             fields,
@@ -605,16 +619,23 @@ class BaseV3Backend:
             self._base_path(base_token, table_id, "records", "batch_get"),
             json=body,
         )
-        page = self._parse_matrix(data)
-        returned_ids = {record.record_id for record in page.records}
-        accounted_ids = returned_ids | set(page.record_not_found)
+        page = self._parse_matrix(data, allow_deleted_overlap=True)
+        # Base v3 batch_get may echo a deleted ID in record_id_list with an
+        # all-empty placeholder row and also list it in record_not_found.
+        # Treat the placeholder as absent instead of as a present record.
+        missing_ids = set(page.record_not_found)
+        records = tuple(
+            record for record in page.records if record.record_id not in missing_ids
+        )
+        returned_ids = {record.record_id for record in records}
+        accounted_ids = returned_ids | missing_ids
         if page.has_more or accounted_ids != set(record_ids):
             raise BaseV3MatrixError(
                 "batch_get did not account for exactly the requested record IDs",
                 response_data=data,
             )
         return RecordReadResult(
-            records=page.records,
+            records=records,
             fields=page.fields,
             complete=True,
             backend=self.api_family,

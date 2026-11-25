@@ -300,6 +300,32 @@ def test_v3_batch_get_uses_select_fields():
     }
 
 
+def test_v3_batch_get_treats_deleted_placeholder_as_absent():
+    data = matrix([[None]])
+    data["data"]["record_not_found"] = ["rec_0"]
+    api, _ = make_backend([response(data)])
+    result = api.batch_get_records("base", "table", ["rec_0"])
+    assert result.records == ()
+    assert result.record_not_found == ("rec_0",)
+    assert result.complete is True
+
+
+def test_v3_batch_get_rejects_missing_id_with_nonempty_row():
+    data = matrix([["A"]])
+    data["data"]["record_not_found"] = ["rec_0"]
+    api, _ = make_backend([response(data)])
+    with pytest.raises(BaseV3MatrixError, match="non-empty record"):
+        api.batch_get_records("base", "table", ["rec_0"])
+
+
+def test_v3_list_records_still_rejects_missing_present_overlap():
+    data = matrix([[None]])
+    data["data"]["record_not_found"] = ["rec_0"]
+    api, _ = make_backend([response(data)])
+    with pytest.raises(BaseV3MatrixError, match="present IDs"):
+        api.list_records("base", "table")
+
+
 def test_v3_missing_schema_is_read_before_mutation_and_unknown_field_is_rejected():
     api, transport = make_backend([fields_response(("fld_name", "Name", "text"))])
     with pytest.raises(ValueError, match="unknown field"):

@@ -8,6 +8,16 @@
 
 单一 XTF 入口、YAML v2 初始化、dry-run、删除授权、JSON 自动化，以及 1.9 到 2.0 的人工迁移映射。
 
+### [使用说明.md](./使用说明.md) — 端到端使用手册 ⭐
+
+从安装、配置生成、凭据提供、本地校验、dry-run 到正式执行、写回确认、JSON/退出码和故障排查的完整操作说明。
+
+1. 环境安装与 Excel/CSV 格式支持
+2. `config init/validate/show` 与 `doctor` 全流程
+3. 四种同步模式、索引列和首次运行注意事项
+4. 字段策略、选择性同步、Bitable→Bitable、Sheet 公式保护
+5. 读回确认、partial/indeterminate、退出码与排查表
+
 ### [ARCH.md](./ARCH.md) — 系统架构文档 ⭐
 
 XTF 的整体架构设计、核心组件交互、数据处理流水线与扩展机制。
@@ -76,9 +86,9 @@ Breaking changes、数据安全语义、人工迁移入口，以及仍需完成�
 
 AI 友好型飞书 OpenAPI Markdown 文档库，便于查阅与扩展开发。
 
-### [../CLAUDE.md](../CLAUDE.md) — Claude Code 开发指南
+### [../AGENTS.md](../AGENTS.md) — 仓库协作与开发指南
 
-面向 AI 辅助开发的项目上下文文件，包含架构概览、开发命令与注意事项。
+面向 AI 辅助开发和贡献者的项目上下文文件，包含架构边界、开发命令、验证要求与注意事项。
 
 ---
 
@@ -102,6 +112,7 @@ AI 友好型飞书 OpenAPI Markdown 文档库，便于查阅与扩展开发。
 | 文档 | 内容 | 面向读者 |
 |------|------|----------|
 | [../QUICKSTART.md](../QUICKSTART.md) | 快速开始与 1.9→2.0 迁移 | 所有用户 |
+| [使用说明.md](./使用说明.md) | 端到端使用流程、结果语义与故障排查 | 所有用户 |
 | [ARCH.md](./ARCH.md) | 系统架构与组件设计 | 开发者、架构师 |
 | [CONFIG.md](./CONFIG.md) | 配置参数完整参考 | 所有用户 |
 | [SYNC.md](./SYNC.md) | 同步模式与选择性同步（含 Bitable/Sheet 分版本详解） | 所有用户 |

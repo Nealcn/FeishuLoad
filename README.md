@@ -201,6 +201,7 @@ XTF/
 │   └── sheet.py              # 电子表格 API
 ├── utils/
 │   └── excel_reader.py       # Excel/CSV 读取器
+├── gui/                      # 可选桌面界面（Tkinter，调用 CLI）
 ├── config.example.yaml       # 主程序 YAML schema v2 模板
 ├── QUICKSTART.md             # 安装、运行和 1.9→2.0 人工迁移
 ├── requirements.txt          # 依赖
@@ -213,6 +214,8 @@ XTF/
 | 文档 | 内容 |
 |------|------|
 | **[QUICKSTART.md](QUICKSTART.md)** | 快速开始与 1.9→2.0 人工迁移 |
+| **[docs/使用说明.md](docs/使用说明.md)** | 端到端使用流程、结果语义与故障排查 |
+| **[gui/README.md](gui/README.md)** | 可选的桌面界面（非技术用户） |
 | **[docs/README.md](docs/README.md)** | 📚 文档中心，导航与快速入门 |
 | **[docs/ARCH.md](docs/ARCH.md)** | 系统架构，四层设计，组件交互 |
 | **[docs/CONFIG.md](docs/CONFIG.md)** | 配置参数完整参考，CLI 映射 |
