@@ -34,6 +34,35 @@ python gui/app.py
 ./.venv/Scripts/python.exe gui/app.py
 ```
 
+## 换到另一台电脑
+
+如果要把整个项目复制到别的 Windows 电脑，最省事的方式是双击根目录的 `setup_and_run.bat`。
+
+它会在首次运行时自动：
+
+1. 检测 `py` / `python`
+2. 创建项目内的 `.venv`
+3. 安装 `requirements.txt`
+4. 启动 GUI
+
+操作步骤：
+
+1. 在目标电脑安装 **Python 3.10+**，安装时勾选：
+   - Add python.exe to PATH
+   - tcl/tk and IDLE
+2. 复制项目文件夹。**不要复制**这些内容：
+   - `.venv/`（换机器会失效，而且很大）
+   - `.git/`（只运行不需要）
+   - `logs/`、`__pycache__/`、各类缓存
+   - `config.yaml`（含 secret）
+   - `测试.xlsx` 等本地生产数据
+3. 双击 `setup_and_run.bat`
+4. 首次需要联网安装依赖；之后启动通常不到 1 秒
+
+如果目标电脑不能安装 Python，可以改用 PyInstaller 打包的 `XTF.exe` + `XTF-GUI.exe`，见下方“打包成 exe”。
+
+不要把旧电脑的 `.venv` 直接复制过去：虚拟环境里包含绝对路径和平台相关二进制，换机器后不可靠。
+
 ### 依赖
 
 只需要项目已有的运行依赖：
@@ -153,6 +182,8 @@ pytest tests/test_gui_layout.py -q
 | 「读取目标表」报 1254302 | 应用没有该表的角色权限 | 把应用添加为 Base 文档应用，或检查高级权限设置 |
 | 「数据表」下拉框是空的 | 没解析链接、凭据不完整，或应用没有 Base 读权限 | 先点「解析」，再点「刷新列表」；检查 App ID / Secret 和文档协作者 |
 | 换了 Base 链接后下拉框还显示旧表 | 输入框内容已变但还没解析 | 点「解析」；改动链接会自动清空旧列表 |
+| 更新项目后依赖没有重新安装 | `setup_and_run.bat` 用 `.venv\.xtf_deps_ok` 跳过安装 | 删除 `.venv\.xtf_deps_ok` 后重新双击 `setup_and_run.bat` |
+| 双击 `setup_and_run.bat` 提示找不到 Python | 目标电脑没装 Python，或没勾选 Add to PATH | 安装 Python 3.10+，勾选 Add python.exe to PATH 和 tcl/tk and IDLE |
 
 ## 权限
 
